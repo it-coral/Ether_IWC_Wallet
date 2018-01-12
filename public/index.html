@@ -1,69 +1,91 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>InfinityWinCoin</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
-    <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+	<title>IWT Wallet</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/css/main.css">
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-    crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
-    <script src="/app.js"></script>
-    <link rel="stylesheet" href="assets/css/main.css" />
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<script type="text/javascript" src="web3.js"></script> 
+
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+
 </head>
-<body class="is-loading" ng-app="authyDemo">
+<body style="
+background: url(assets/img/bg2.jpeg) top left repeat, url(assets/img/bg2.jpeg) top left no-repeat;
+background-attachment: fixed;
+background-position: top left;
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;">
 
-    <div id="wrapper">
-        <section id="main">
-            <header>
-                <span class="avatar"><img src="images/IWTLogo.jpeg" alt="" /></span>
-                <h1>InfinityWinCoin</h1>
-            </header>
+<div id="particles-js"></div>
 
-            <div class="container login" ng-controller="LoginController">
+	<div id="Container" style="margin: 0 auto 0 auto;width: 80%; text-align: center;">
+		<div id="header">
+			<img src="assets/img/coin.png" style="vertical-align: middle; width: 100px; height: 100px; margin-right: 30px;" /><img src="assets/img/loewe.jpeg" style="margin: 20px; vertical-align: middle" /><img src="assets/img/coin.png" style="vertical-align: middle;  width: 100px; height: 100px; margin-left: 30px;" />
+		</div>
+		<div id="hedaingBox">
+			<h1 style="padding: 20px; margin-top: 8px; margin-bottom: 8px; font-family: 'Open Sans Condensed', sans-serif;">InfinityWinWallet</h1>
+		</div>
+		<div id="WalletInfo">
+			<div id="balances">
+				<div style="float: left; margin: 0 50px 0 0;">
+					<img src="assets/img/ethereum.png"" width="40" height="40" />
+					<p>Your ETH Balance is:</p>
+					<div id="AccBalance_ETH" class="AccBalance_ETH balance">0</div>
+				</div>
+				<div style="float: right;">
+					<img src="assets/img/coin.png"" width="40" height="40" />
+					<p>Your IWC Balance is:</p>
+					<div id="AccBalance_Token" class="AccBalance_Token balance">0</div>
+				</div>
+				<div style="clear:both;"></div>
+			</div>
+			<div style="margin: 8px 0 0 0;">
+				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..." />
+				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount" />
+				<button type="submit" id="TransferToken_Btn" class="TransferToken_Btn button-primary">Transfer</button>
+			</div>
+			<div>
+				<input type="text" name="BuyTokens_Beneficary" class="BuyTokens_Beneficary" placeholder="beneficary 0x..." />
+				<input type="number" name="BuyTokens_Amount" class="BuyTokens_Amount" placeholder="ETH amount" />
+				<button type="submit" id="BuyTokens_Btn" class="BuyTokens_Btn button-primary">Buy Coins</button>
+			</div>
+			<div>
+				<a href="https://etherdelta.com/#0x84332b82575cd4a7bac7a5df08a9712e78ff7d1f-ETH" class="button button-primary" target="_blank">Go to exchange here</a>
+			</div>
+		</div>
+		<div id="footerBox" ng-controller="AuthyController">
+			<p style="padding: 20px;">Your InfinityWin wallet address: <b id="walletAddr"></b> <input type="submit" value="Logout" ng-click="logout()" class="button button-primary"></p>
+		</div>
+	</div>
 
-                <h3 class="panel-title">Login</h3>
 
-                <input type="email" name="email" id="email" class="form-control input-sm"
-                ng-model="setup.email"
-                placeholder="Email Address">
 
-                <input type="password" name="password" id="login_password"
-                class="form-control input-sm"
-                ng-model="setup.password"
-                placeholder="Password">
+	<!-- scripts -->
+	<script src="assets/js/particles.js"></script>
+	<script src="assets/js/app.js"></script>
 
-                <input type="submit" value="Login"  ng-click="login()" class="button-primary">
-                <div><a href="/register">Not registered?</a></div>
+	<script type="text/javascript">
+		var user = {};
+		if(window.localStroage.getItem('user') !== 'undefined')
+			user = JSON.parse(window.localStorage.getItem('user'));
+		console.log(user);
+		//$('#walletAddr').text(publKey);
+	</script>
 
-            </div>
 
-        </section>
-        <footer id="footer">
-            <ul class="copyright">
-                <li>&copy;  <a href="#">InfinityWin</a></li>
-            </ul>
-        </footer>
-
-    </div>
-
-    <!-- Scripts -->
-    <!--[if lte IE 8]><script src="assets/js/respond.min.js"></script><![endif]-->
-    <script>
-        if ('addEventListener' in window) {
-            window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
-            document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
-        }
-    </script>
-
+	<script src="assets/js/main.js"></script>
 </body>
 </html>
+
