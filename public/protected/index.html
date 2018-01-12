@@ -65,8 +65,8 @@ background-size: cover;">
 				<a href="https://etherdelta.com/#0x84332b82575cd4a7bac7a5df08a9712e78ff7d1f-ETH" class="button button-primary" target="_blank">Go to exchange here</a>
 			</div>
 		</div>
-		<div id="footerBox">
-			<p style="padding: 20px;">Your InfinityWin wallet address: <b id="walletAddr"><%= session %></b> <input type="submit" value="Logout" ng-click="logout()" class="button button-primary"></p>
+		<div id="footerBox" ng-controller="AuthyController">
+			<p style="padding: 20px;">Your InfinityWin wallet address: <b id="walletAddr"></b> <input type="submit" value="Logout" ng-click="logout()" class="button button-primary"></p>
 		</div>
 	</div>
 
@@ -77,8 +77,10 @@ background-size: cover;">
 	<script src="assets/js/app.js"></script>
 
 	<script type="text/javascript">
-		console.log(session);
-		//var publKey = $sessionStorage.get('publKey');
+		var user = {};
+		if(window.localStroage.getItem('user') !== 'undefined')
+			user = JSON.parse(window.localStorage.getItem('user'));
+		console.log(user);
 		//$('#walletAddr').text(publKey);
 	</script>
 

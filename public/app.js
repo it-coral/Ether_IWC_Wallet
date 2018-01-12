@@ -8,7 +8,8 @@ app.controller('LoginController', function ($scope, $http, $window) {
         $http.post('/api/login', $scope.setup)
             .success(function (data, status, headers, config) {
                 console.log("Login success: ", data);
-                $window.location.href = $window.location.origin + "/2fa";
+                window.localStorage.setItem('wincoinuser', JSON.stringify(data));
+                $window.location.href = $window.location.origin + "/protected";
             })
             .error(function (data, status, headers, config) {
                 console.error("Login error: ", data);

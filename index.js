@@ -6,7 +6,7 @@ var bodyParser      = require('body-parser');
 var expressSession  = require('express-session');
 var mongoStore      = require('connect-mongo')({session: expressSession});
 var mongoose        = require('mongoose');
-var mongoDB         = 'mongodb://IWCdb:7H1SisA73St@localhost:27017/authydemo';
+var mongoDB         = 'mongodb://localhost:27017/authydemo';
 
 var config          = require('./server/config.js');
 
@@ -159,9 +159,9 @@ router.route('/test').post(function(req, res){
 /**
  * All pages under protected require the user to be both logged in and authenticated via 2FA
  */
-app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
-    next();
-});
+// app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
+//     next();
+// });
 
 /**
  * Require user to be logged in to view 2FA page.
