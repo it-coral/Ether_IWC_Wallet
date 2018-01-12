@@ -1,7 +1,7 @@
 var crypto      = require('crypto');
 var mongoose    = require('mongoose');
 var User        = mongoose.model('User');
-var config      = require('../config.js');
+var config      = require('../../config.js');
 var qs          = require('qs');
 const authy     = require('authy')(config.API_KEY);
 
@@ -24,13 +24,13 @@ function hashPW (pwd) {
  * @param res
  */
 exports.login = function (req, res) {
-    User.findOne({email: 'A@a.COM'})
+    User.findOne({email: req.body.email})
         .exec(function (err, user) {
             if (!user) {
                 err = 'email Not Found';
-            // } else if (('password' in req.body) && (user.hashed_password !==
-            //     hashPW(req.body.password.toString()))) {
-            //     err = 'Wrong Password';
+            } else if (('password' in req.body) && (user.hashed_password !==
+                hashPW(req.body.password.toString()))) {
+                err = 'Wrong Password';
             } else {
                 createSession(req, res, user);
             }
