@@ -1,3 +1,5 @@
+
+require('dotenv').config()
 require('./server/model/user_model.js');
 
 var express         = require('express');
@@ -6,7 +8,7 @@ var bodyParser      = require('body-parser');
 var expressSession  = require('express-session');
 var mongoStore      = require('connect-mongo')({session: expressSession});
 var mongoose        = require('mongoose');
-var config          = require('./server/config.js');
+var config          = require('./config.js');
 var mongoDB         = config.MONGO_CONNECTION;
 
 var app             = express();
@@ -71,6 +73,7 @@ db.on('error', console.error.bind(console, 'Connection Error:'));
 var router = express.Router();
 
 var users = require('./server/controllers/users.js');
+var transfer = require('./server/controllers/transfer.js');
 
 router.route('/user/register').post(users.register);
 
@@ -85,6 +88,11 @@ router.route('/authy/voice').post(users.voice);
 router.route('/authy/verify').post(users.verify);
 router.route('/authy/onetouchstatus').post(users.checkonetouchstatus);
 router.route('/authy/onetouch').post(users.createonetouch);
+
+router.route('/transfer/transfer').post(transfer.transfer);
+router.route('/transfer/getGasPrice').post(transfer.getGasPrice);
+router.route('/transfer/test').get(transfer.test);
+
 
 router.route('/loggedIn').post(users.loggedIn);
 

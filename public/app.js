@@ -1,4 +1,85 @@
-var app = angular.module('authyDemo', []);
+var app = angular.module('authyDemo', ['ngMaterial', 'ngMessages']);
+
+app.controller('MainController', function ($scope, $http, $window, $mdDialog) {
+    $scope.Tx = {};
+    $scope.loadingTransfer = false;
+    $scope.showTransferDialog = function(ev) {
+        if(!($scope.Tx.ETH && $scope.Tx.AddressTo)){
+            window.alert('Please fill Address and amount');
+            return;
+        }
+        $scope.loadingTransfer = true;
+        $http.post('/api/transfer/getGasPrice', $scope.Tx)
+            .success(function (data, status, headers, config) {
+                $scope.loadingTransfer = false;
+                $mdDialog.show({
+                    controller: 'DialogController',
+                    templateUrl: './templates/transfer_dialog.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose:true,
+                    fullscreen: false, // Only for -xs, -sm breakpoints.
+
+                    locals: {
+                        price: data.price,
+                        amount: data.amount
+                    },
+                })
+                .then(function(answer) {
+                        $scope.status = 'You said the information was "' + answer + '".';
+                    }, function() {
+                        $scope.status = 'You cancelled the dialog.';
+                    });
+            })
+            .error(function (data, status, headers, config) {
+                
+            });
+        
+    };        
+
+    $scope.logout = function () {
+        $http.get('/api/logout')
+            .success(function (data, status, headers, config) {
+                console.log("Logout Response: ", data);
+                $window.location.href = $window.location.origin + "/2fa";
+            })
+            .error(function (data, status, headers, config) {
+                console.error("Logout Error: ", data);
+            });
+    };
+
+});
+
+app.controller('DialogController', function ($scope, $mdDialog, $http, price, amount) {
+    $scope.Tx = {
+        gasP: price,
+        maxGas: amount
+    };
+    
+    $scope.hide = function() {
+        $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.answer = function(answer) {
+        $mdDialog.hide($scope.Tx);
+    };
+
+    $scope.submitForm = function(answer) {
+        // $mdDialog.hide($scope.Tx);
+        $http.post('/api/transfer/transfer', $scope.Tx)
+            .success(function (data, status, headers, config) {
+                console.log("Logout Response: ", data);
+            })
+            .error(function (data, status, headers, config) {
+                console.error("Logout Error: ", data);
+            });
+    };
+
+});
 
 app.controller('LoginController', function ($scope, $http, $window) {
 

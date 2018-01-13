@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  ng-app="authyDemo">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="assets/css/main.css">
 
 
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 	<script type="text/javascript" src="web3.js"></script> 
@@ -26,7 +27,7 @@ background-position: top left;
 -webkit-background-size: cover;
 -moz-background-size: cover;
 -o-background-size: cover;
-background-size: cover;">
+background-size: cover;"  ng-controller="MainController">
 
 <div id="particles-js"></div>
 
@@ -52,33 +53,52 @@ background-size: cover;">
 				<div style="clear:both;"></div>
 			</div>
 			<div style="margin: 8px 0 0 0;">
-				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..." />
-				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount" />
-				<button type="submit" id="TransferToken_Btn" class="TransferToken_Btn button-primary">Transfer</button>
+				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..."  ng-model="Tx.AddressTo" />
+				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount"  ng-model="Tx.ETH"/>
+
+				<button type="submit" id="TransferToken_Btn" class="TransferToken_Btn button-primary" ng-click="showTransferDialog($event)">Transfer</button>
+				
+					
+
+				<button type="submit" id="TransferToken_Btn_Customized" class="TransferToken_Btn button-primary" ng-click="showTransferDialog($event)">
+					<div layout="row"  layout-align="center center">
+						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingTransfer"></md-progress-circular>
+						<div style="padding-left:5px">Transfer Dlg</div>
+					</div>
+				</button>
 			</div>
 			<div>
 				<input type="text" name="BuyTokens_Beneficary" class="BuyTokens_Beneficary" placeholder="beneficary 0x..." />
 				<input type="number" name="BuyTokens_Amount" class="BuyTokens_Amount" placeholder="ETH amount" />
 				<button type="submit" id="BuyTokens_Btn" class="BuyTokens_Btn button-primary">Buy Coins</button>
+				<button type="submit" id="BuyTokens_Btn_Customized" class="BuyTokens_Btn button-primary">Buy Coins DLG</button>
 			</div>
 			<div>
 				<a href="https://etherdelta.com/#0x84332b82575cd4a7bac7a5df08a9712e78ff7d1f-ETH" class="button button-primary" target="_blank">Go to exchange here</a>
 			</div>
 		</div>
-		<div id="footerBox" ng-controller="AuthyController">
+		<div id="footerBox" >
 			<p style="padding: 20px;">Your InfinityWin wallet address: <b id="walletAddr"></b> <input type="submit" value="Logout" ng-click="logout()" class="button button-primary"></p>
 		</div>
 	</div>
-
-
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js'></script>
+	<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js'></script>
+	<script src='https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js'></script>
 
 	<!-- scripts -->
 	<script src="assets/js/particles.js"></script>
 	<script src="assets/js/app.js"></script>
 
+	<script src="app.js"></script>
+
+  
 	<script type="text/javascript">
 		var user = {};
-		if(window.localStroage.getItem('user') !== 'undefined')
+		if(window.localStorage.getItem('user') !== 'undefined')
 			user = JSON.parse(window.localStorage.getItem('user'));
 		console.log(user);
 		//$('#walletAddr').text(publKey);
