@@ -40,7 +40,11 @@ mongoose.connect(mongoDB);
 var db = mongoose.connection;
 
 app.use(cookieParser());
-app.use(expressSession({'secret': config.SECRET}));
+app.use(expressSession({
+    'secret': config.SECRET,
+    'cookie': {
+        'maxAge': 3600*1000*24
+    }}));
 
 app.use(bodyParser.json({}));
 app.use(bodyParser.urlencoded({
@@ -88,6 +92,7 @@ router.route('/authy/voice').post(users.voice);
 router.route('/authy/verify').post(users.verify);
 router.route('/authy/onetouchstatus').post(users.checkonetouchstatus);
 router.route('/authy/onetouch').post(users.createonetouch);
+router.route('/authy/getPublicKey/:userId').get(users.getPublicKey);
 
 router.route('/transfer/transfer').post(transfer.transfer);
 router.route('/transfer/getGasPrice').post(transfer.getGasPrice);
@@ -166,16 +171,16 @@ router.route('/test').post(function(req, res){
 /**
  * All pages under protected require the user to be both logged in and authenticated via 2FA
  */
-app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
-    next();
-});
+// app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
+//     next();
+// });
 
 /**
  * Require user to be logged in to view 2FA page.
  */
-app.all('/2fa/*', requireLogin, function (req, res, next) {
-    next();
-});
+    // app.all('/2fa/*', requireLogin, function (req, res, next) {
+    //     next();
+    // });
 
 /**
  * Prefix all router calls with 'api'

@@ -18,6 +18,22 @@ function hashPW (pwd) {
     return crypto.createHash('sha256').update(pwd).digest('base64').toString();
 }
 
+exports.getPublicKey = function (req, res) {
+    User.findOne({_id: req.params.userId})
+        .exec(function (err, user) {
+            if (!user) {
+                err = 'User Not Found';
+            } else{
+                res.json({publicKey: user.pubKey});
+            }
+
+            if (err) {
+                res.status(500).json(err);
+            }
+        })
+}
+
+
 /**
  * Login a user
  * @param req
@@ -97,13 +113,13 @@ exports.register = function (req, res) {
 
         user.set('hashed_password', hashPW(req.body.password));
 
-        // var keys    = createKeys();
-        // var encPubl = encrypt(keys.pubKey, req.body.password);
-        // var encPriv = encrypt(keys.privKey,req.body.password);
-        // console.log(encPubl);
-        // console.log(encPriv);
-        // user.set('privKey', encPriv);
-        // user.set('pubKey',  encPubl);
+        var keys    = createKeys();
+        var encPubl = keys.pubKey;
+        var encPriv = encrypt(keys.privKey,req.body.password);
+        console.log(encPubl);
+        console.log(encPriv);
+        user.set('privKey', encPriv);
+        user.set('pubKey',  encPubl);
         // //var hw = 
 
         user.set('email',   req.body.email);
@@ -448,7 +464,7 @@ function createSession (req, res, user) {
 
 function encrypt(_text, _pass){
   var algorithm  = 'aes-256-ctr';
-  var cipher     = crypto.createCipheriv(algorithm, _pass)
+  var cipher     = crypto.createCipher(algorithm, _pass)
   var crypted    = cipher.update(_text,'utf8','hex')
   crypted       += cipher.final('hex');
   return crypted;

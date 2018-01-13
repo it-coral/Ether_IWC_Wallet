@@ -1,8 +1,45 @@
 var app = angular.module('authyDemo', ['ngMaterial', 'ngMessages']);
+app.service('UserService', function($window){
+    var service = this;
 
-app.controller('MainController', function ($scope, $http, $window, $mdDialog) {
+    service.user = null;
+    if($window.localStorage.getItem('wincoinuser') !== 'undefined')
+        service.user = JSON.parse($window.localStorage.getItem('wincoinuser'));
+    
+    service.getUser = function(){
+        return service.user;
+    }
+
+    return service;
+});
+app.controller('MainController', function ($scope, $http, $window, $mdDialog, UserService, $timeout) {
+    
+    $scope.user = UserService.getUser();
     $scope.Tx = {};
     $scope.loadingTransfer = false;
+    $scope.publicKey = '';
+    $timeout(function(){
+        activate();
+    }, 0);
+
+    function activate(){
+        if($scope.user && $scope.user.user){
+            $http.get('/api/authy/getPublicKey/' + $scope.user.user)
+            .success(function (data, status, headers, config) {
+                $scope.publicKey = data.publicKey;
+            })
+            .error(function (data, status, headers, config) {
+                
+            });
+
+        } else {
+            console.log('User Not Logged In');
+            return ;
+        }
+
+    }
+
+
     $scope.showTransferDialog = function(ev) {
         if(!($scope.Tx.ETH && $scope.Tx.AddressTo)){
             window.alert('Please fill Address and amount');
@@ -14,7 +51,7 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog) {
                 $scope.loadingTransfer = false;
                 $mdDialog.show({
                     controller: 'DialogController',
-                    templateUrl: './templates/transfer_dialog.html',
+                    templateUrl: '/templates/transfer_dialog.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     clickOutsideToClose:true,

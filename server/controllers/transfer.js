@@ -20,6 +20,9 @@ const addressTo   = '0x5Be0E52bbe27e08F29467c712d7ff4cda8E75842';
 // Signs the given transaction data and sends it. Abstracts some of the details 
 // of buffering and serializing the transaction for web3.
 
+const txData = {};
+
+    
 function sendSigned(txData, cb) {
   const privateKey  = new Buffer(privKey, 'hex');
   const transaction = new Tx(txData);
@@ -38,8 +41,8 @@ exports.transfer = function (req, res) {
       // construct the transaction data
       const txData = {
         nonce: txCount,
-        gas: req.body.maxGas,
-        // gas: 4000000,
+        // gas: req.body.maxGas,
+        gas: 21000,
         gasPrice: req.body.gasP, // 10 Gwei
         to:       req.body.addressTo,
         from:     addressFrom,
@@ -65,15 +68,21 @@ exports.getGasPrice = function (req, res) {
 
     var myContract = config.TokenABI;
     myContract.options.from = addressFrom;
+    
     web3.eth.getGasPrice()
     .then((price)=>{
+        const txData = {
+            gasPrice: price, // 10 Gwei
+            to:       req.body.addressTo,
+            from:     addressFrom,
+        };
 
         web3.eth.estimateGas(
-            {
-                from: addressFrom,
-                to: "0xc4abd0339eb8d57087278718986382264244252f", 
-                data: "0xc6888fa10000000000000000000000000000000000000000000000000000000000000003"
-            })
+        {
+            from: addressFrom,
+            to: req.body.addressTo, 
+            data: web3.utils.toHex(txData)
+        })
         .then(function(gasAmount){
             res.json({price: price, amount: gasAmount});
         })
