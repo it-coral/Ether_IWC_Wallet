@@ -59,7 +59,9 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
                     locals: {
                         price: data.price,
-                        amount: data.amount
+                        amount: data.amount,
+                        ETH: $scope.Tx.ETH,
+                        AddressTo: $scope.Tx.AddressTo
                     },
                 })
                 .then(function(answer) {
@@ -87,10 +89,12 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
 });
 
-app.controller('DialogController', function ($scope, $mdDialog, $http, price, amount) {
+app.controller('DialogController', function ($scope, $mdDialog, $http, price, amount, UserService, ETH, AddressTo) {
     $scope.Tx = {
         gasP: price,
-        maxGas: amount
+        maxGas: amount,
+        ETH: ETH,
+        AddressTo: AddressTo
     };
     
     $scope.hide = function() {
@@ -107,7 +111,7 @@ app.controller('DialogController', function ($scope, $mdDialog, $http, price, am
 
     $scope.submitForm = function(answer) {
         // $mdDialog.hide($scope.Tx);
-        $http.post('/api/transfer/transfer', $scope.Tx)
+        $http.post('/api/transfer/transfer/' + UserService.getUser().user, $scope.Tx)
             .success(function (data, status, headers, config) {
                 console.log("Logout Response: ", data);
             })
@@ -151,6 +155,8 @@ app.controller('RegistrationController', function ($scope, $http, $window) {
             $http.post('/api/user/register', $scope.setup)
                 .success(function (data, status, headers, config) {
                     console.log("Success registering: ", data);
+
+                    $window.localStorage.setItem('wincoinuser', JSON.stringify(data));
                     $window.location.href = $window.location.origin + "/2fa";
                 })
                 .error(function (data, status, headers, config) {
@@ -215,6 +221,7 @@ app.controller('AuthyController', function ($scope, $http, $window, $interval) {
         $http.post('/api/authy/verify', {token: $scope.setup.token})
             .success(function (data, status, headers, config) {
                 console.log("2FA success ", data);
+                $window.localStorage.setItem('wincoinuser', JSON.stringify(data));
                 $window.location.href = $window.location.origin + "/protected";
             })
             .error(function (data, status, headers, config) {

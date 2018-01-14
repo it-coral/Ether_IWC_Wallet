@@ -1,22 +1,12 @@
-var crypto      = require('crypto');
+var crypt       = require('../lib/crypt');
 var mongoose    = require('mongoose');
 var User        = mongoose.model('User');
 var config      = require('../../config.js');
 var qs          = require('qs');
 const authy     = require('authy')(config.API_KEY);
 
-const Web3      = require('web3');
-if(typeof Web3 !== 'undefined'){
-    var web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/Jyx239pRohZuGJFJlLmf"));
-    console.log('Found web3!');
-}else{
-    console.log("No web3!");
-}
-// const Tx    = require('ethereumjs-tx');
+const web3      = config.web3;
 
-function hashPW (pwd) {
-    return crypto.createHash('sha256').update(pwd).digest('base64').toString();
-}
 
 exports.getPublicKey = function (req, res) {
     User.findOne({_id: req.params.userId})
@@ -45,7 +35,7 @@ exports.login = function (req, res) {
             if (!user) {
                 err = 'email Not Found';
             } else if (('password' in req.body) && (user.hashed_password !==
-                hashPW(req.body.password.toString()))) {
+                crypt.hashPW(req.body.password.toString()))) {
                 err = 'Wrong Password';
             } else {
                 createSession(req, res, user);
@@ -110,12 +100,12 @@ exports.register = function (req, res) {
         }
 
         user = new User({email: req.body.email});
+        
+        user.set('hashed_password', crypt.hashPW(req.body.password));
 
-        user.set('hashed_password', hashPW(req.body.password));
-
-        var keys    = createKeys();
+        var keys    = crypt.createKeys();
         var encPubl = keys.pubKey;
-        var encPriv = encrypt(keys.privKey,req.body.password);
+        var encPriv = crypt.encrypt(keys.privKey,req.body.password);
         console.log(encPubl);
         console.log(encPriv);
         user.set('privKey', encPriv);
@@ -258,19 +248,20 @@ exports.verify = function (req, res) {
             res.status(500).json(err);
         }
 
-
-        authy.verify(user.authyId, req.body.token, function (err, tokenRes) {
-            if (err) {
-                console.log("Verify Token Error: ", err);
-                res.status(500).json(err);
-                return;
-            }
-            console.log("Verify Token Response: ", tokenRes);
-            if (tokenRes.success) {
-                req.session.authy = true;
-            }
-            res.status(200).json(tokenRes);
-        });
+        // authy.verify(user.authyId, req.body.token, function (err, tokenRes) {
+        //     if (err) {
+        //         console.log("Verify Token Error: ", err);
+        //         res.status(500).json(err);
+        //         return;
+        //     }
+        //     console.log("Verify Token Response: ", tokenRes);
+        //     if (tokenRes.success) {
+        //         req.session.authy = true;
+        //     }
+            
+            req.session.authy = true;
+            res.status(200).json(req.session);
+        // });
     });
 };
 
@@ -460,33 +451,4 @@ function createSession (req, res, user) {
         req.session.publKey     = user.pubKey;
         res.status(200).json(req.session);
     });
-}
-
-function encrypt(_text, _pass){
-  var algorithm  = 'aes-256-ctr';
-  var cipher     = crypto.createCipher(algorithm, _pass)
-  var crypted    = cipher.update(_text,'utf8','hex')
-  crypted       += cipher.final('hex');
-  return crypted;
-}
- 
-function decrypt(_text, _pass){
-  var algorithm     = 'aes-256-ctr';
-  var decipher      = crypto.createDecipher(algorithm, _pass)
-  var dec           = decipher.update(_text,'hex','utf8')
-  dec              += decipher.final('utf8');
-  return dec;
-}
-
-function createKeys(){
-    var testAcc = web3.eth.accounts.create();
-    //console.log(testAcc);
-    console.log(testAcc.privateKey);
-    console.log(testAcc.address);
-
-    var keys = {
-        pubKey:  testAcc.address,
-        privKey: testAcc.privateKey
-    };
-  return keys;
 }
