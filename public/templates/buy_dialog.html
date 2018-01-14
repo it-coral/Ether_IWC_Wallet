@@ -1,0 +1,60 @@
+<md-dialog >
+
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Buy IWC</h2>
+      <span flex></span>
+      <md-button class="md-icon-button" ng-click="cancel()">
+        <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+
+  <md-dialog-content style="margin: 20px">
+
+    <form name="buyIWC" novalidate>
+      <md-input-container class="md-icon-float md-block"  >
+        <label>Gas amount</label>
+        <input name="Tx.maxGas" ng-model="Tx.maxGas" type="number" required>
+        <div ng-messages="buyIWC.Tx.maxGas.$error">
+          <div ng-message="required">This is required!</div>
+        </div>
+      </md-input-container>
+
+      <md-input-container class="md-icon-float md-block" >
+        <label>Gas price</label>
+        <input name="Tx.gasP" ng-model="Tx.gasP" type="text" required>
+        <div ng-messages="buyIWC.Tx.gasP.$error">
+          <div ng-message="required">This is required!</div>
+        </div>
+      </md-input-container>
+
+      <md-input-container class="md-icon-float md-block" >
+        <label>Password</label>
+        <input name="Tx.pass" ng-model="Tx.pass" type="password" required>
+        <div ng-messages="buyIWC.Tx.pass.$error">
+          <div ng-message="required">This is required!</div>
+        </div>
+      </md-input-container>
+      
+    </form>
+  </md-dialog-content>
+
+  <md-dialog-actions layout="row">
+
+    <md-section layout="row" layout-align="center">
+
+      <md-button ng-click="submitBuyForm(buyIWC)" ng-disabled="buyIWC.$invalid">
+        Buy IWC!
+      </md-button>
+    </md-section>
+    <!--<md-button ng-click="answer('not useful')">
+      cancel
+    </md-button>
+    <span flex></span>
+    <md-button ng-click="submitForm(buyIWC)" ng-disabled="buyIWC.$invalid">
+      Buy IWC!
+    </md-button>-->
+  </md-dialog-actions>
+
+</md-dialog>

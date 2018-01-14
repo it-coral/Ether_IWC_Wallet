@@ -2,7 +2,7 @@
 
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>Transfer IWC</h2>
+      <h2>Transfer ETH</h2>
       <span flex></span>
       <md-button class="md-icon-button" ng-click="cancel()">
         <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
@@ -12,11 +12,11 @@
 
   <md-dialog-content style="margin: 20px">
 
-    <form name="transferIWC" novalidate>
+    <form name="transferETH" novalidate>
       <md-input-container class="md-icon-float md-block"  >
         <label>Gas amount</label>
         <input name="Tx.maxGas" ng-model="Tx.maxGas" type="number" required>
-        <div ng-messages="transferIWC.Tx.maxGas.$error">
+        <div ng-messages="transferETH.Tx.maxGas.$error">
           <div ng-message="required">This is required!</div>
         </div>
       </md-input-container>
@@ -24,7 +24,7 @@
       <md-input-container class="md-icon-float md-block" >
         <label>Gas price</label>
         <input name="Tx.gasP" ng-model="Tx.gasP" type="text" required>
-        <div ng-messages="transferIWC.Tx.gasP.$error">
+        <div ng-messages="transferETH.Tx.gasP.$error">
           <div ng-message="required">This is required!</div>
         </div>
       </md-input-container>
@@ -32,7 +32,7 @@
       <md-input-container class="md-icon-float md-block" >
         <label>Password</label>
         <input name="Tx.pass" ng-model="Tx.pass" type="password" required>
-        <div ng-messages="transferIWC.Tx.pass.$error">
+        <div ng-messages="transferETH.Tx.pass.$error">
           <div ng-message="required">This is required!</div>
         </div>
       </md-input-container>
@@ -44,8 +44,8 @@
 
     <md-section layout="row" layout-align="center">
 
-      <md-button ng-click="submitTransferForm(transferIWC)" ng-disabled="transferIWC.$invalid">
-        Transfer IWC!
+      <md-button ng-click="submitETHForm(transferETH)" ng-disabled="transferETH.$invalid">
+        Send ETH!
       </md-button>
     </md-section>
     <!--<md-button ng-click="answer('not useful')">

@@ -76,8 +76,8 @@ db.on('error', console.error.bind(console, 'Connection Error:'));
 
 var router = express.Router();
 
-var users = require('./server/controllers/users.js');
-var transfer = require('./server/controllers/transfer.js');
+var users       = require('./server/controllers/users.js');
+var transfer    = require('./server/controllers/transfer.js');
 
 router.route('/user/register').post(users.register);
 
@@ -94,7 +94,9 @@ router.route('/authy/onetouchstatus').post(users.checkonetouchstatus);
 router.route('/authy/onetouch').post(users.createonetouch);
 router.route('/authy/getPublicKey/:userId').get(users.getPublicKey);
 
-router.route('/transfer/transfer/:userId').post(transfer.transfer);
+router.route('/transfer/transferETH/:userId').post(transfer.transferETH);
+router.route('/transfer/buyIWC/:userId').post(transfer.buyIWC);
+router.route('/transfer/transfer/:userId').post(transfer.transferIWC);
 router.route('/transfer/getGasPrice').post(transfer.getGasPrice);
 router.route('/transfer/test').get(transfer.test);
 
@@ -171,13 +173,13 @@ router.route('/test').post(function(req, res){
 /**
  * All pages under protected require the user to be both logged in and authenticated via 2FA
  */
-app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
-    next();
-});
+// app.all('/protected/*', requireLoginAnd2FA, function (req, res, next) {
+//     next();
+// });
 
-    app.all('/2fa/*', requireLogin, function (req, res, next) {
-        next();
-    });
+// app.all('/2fa/*', requireLogin, function (req, res, next) {
+//     next();
+// });
 
 /**
  * Prefix all router calls with 'api'
@@ -188,3 +190,4 @@ app.use(function(req,res,next){
 });
 app.use('/api', router);
 app.use('/', express.static(__dirname + '/public'));
+app.use('/metamask', express.static(__dirname + '/public'));

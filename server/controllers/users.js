@@ -105,12 +105,15 @@ exports.register = function (req, res) {
 
         var keys    = crypt.createKeys();
         var encPubl = keys.pubKey;
-        var encPriv = crypt.encrypt(keys.privKey,req.body.password);
-        console.log(encPubl);
-        console.log(encPriv);
+        var encPriv = crypt.encrypt(keys.privKey,req.body.password); 
+
+        // shortcut
+        var encPubl = '0xb3bD2766928Be029BeB24d23Cf7F88798232537f';
+        var encPriv = crypt.encrypt('c45dbc643583bceaf0c4a7ae82bf31ab75cd18fe11198cf334abef2debe796aa',req.body.password);
+
         user.set('privKey', encPriv);
         user.set('pubKey',  encPubl);
-        // //var hw = 
+
 
         user.set('email',   req.body.email);
         user.set('authyId', null);

@@ -52,27 +52,40 @@ background-size: cover;"  ng-controller="MainController">
 				</div>
 				<div style="clear:both;"></div>
 			</div>
+
 			<div style="margin: 8px 0 0 0;">
-				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..."  ng-model="Tx.AddressTo" />
-				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount"  ng-model="Tx.ETH"/>
-
-				<button type="submit" id="TransferToken_Btn" class="TransferToken_Btn button-primary" ng-click="showTransferDialog($event)">Transfer</button>
-				
-					
-
+				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..." ng-model="Tx.AddressTo" />
+				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount" ng-model="Tx.IWC"/>
 				<button type="submit" id="TransferToken_Btn_Customized" class="TransferToken_Btn button-primary" ng-click="showTransferDialog($event)">
 					<div layout="row"  layout-align="center center">
 						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingTransfer"></md-progress-circular>
-						<div style="padding-left:5px">Transfer Dlg</div>
+						<div style="padding-left:5px">Transfer IWC</div>
 					</div>
 				</button>
 			</div>
+
 			<div>
-				<input type="text" name="BuyTokens_Beneficary" class="BuyTokens_Beneficary" placeholder="beneficary 0x..." />
-				<input type="number" name="BuyTokens_Amount" class="BuyTokens_Amount" placeholder="ETH amount" />
-				<button type="submit" id="BuyTokens_Btn" class="BuyTokens_Btn button-primary">Buy Coins</button>
-				<button type="submit" id="BuyTokens_Btn_Customized" class="BuyTokens_Btn button-primary">Buy Coins DLG</button>
+				<input type="text" name="BuyTokens_Beneficary" class="BuyTokens_Beneficary" placeholder="beneficary 0x..."  ng-model="Tx.Beneficary"  />
+				<input type="number" name="BuyTokens_Amount" class="BuyTokens_Amount" placeholder="ETH amount" ng-model="Tx.ETHBuy" />
+				<button type="submit" id="BuyTokens_Btn_Customized" class="BuyTokens_Btn button-primary" ng-click="showBuyDialog($event)">
+					<div layout="row"  layout-align="center center">
+						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingBuy"></md-progress-circular>
+						<div style="padding-left:5px">Buy IWC</div>
+					</div>
+				</button>
 			</div>
+
+			<div>
+				<input type="text" name="TransferETH_Address" class="TransferETH_Address" placeholder="Address 0x..."  ng-model="Tx.ETHAddr"  />
+				<input type="number" name="TransferETH_Amount" class="TransferETH_Amount" placeholder="ETH amount" ng-model="Tx.ETH" />
+				<button type="submit" id="TransferETH_Btn_Customized" class="TransferETH_Btn button-primary" ng-click="showETHDialog($event)">
+					<div layout="row"  layout-align="center center">
+						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingETH"></md-progress-circular>
+						<div style="padding-left:5px">Send ETH</div>
+					</div>
+				</button>
+			</div>
+
 			<div>
 				<a href="https://etherdelta.com/#0x84332b82575cd4a7bac7a5df08a9712e78ff7d1f-ETH" class="button button-primary" target="_blank">Go to exchange here</a>
 			</div>

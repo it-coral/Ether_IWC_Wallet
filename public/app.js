@@ -1,4 +1,5 @@
 var app = angular.module('authyDemo', ['ngMaterial', 'ngMessages']);
+
 app.service('UserService', function($window){
     var service = this;
 
@@ -12,11 +13,15 @@ app.service('UserService', function($window){
 
     return service;
 });
+
 app.controller('MainController', function ($scope, $http, $window, $mdDialog, UserService, $timeout) {
     
     $scope.user = UserService.getUser();
     $scope.Tx = {};
+    $scope.Balances;
     $scope.loadingTransfer = false;
+    $scope.loadingBuy = false;
+    $scope.loadingETH = false;
     $scope.publicKey = '';
     $timeout(function(){
         activate();
@@ -41,7 +46,7 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
 
     $scope.showTransferDialog = function(ev) {
-        if(!($scope.Tx.ETH && $scope.Tx.AddressTo)){
+        if(!($scope.Tx.IWC && $scope.Tx.AddressTo)){
             window.alert('Please fill Address and amount');
             return;
         }
@@ -50,7 +55,7 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
             .success(function (data, status, headers, config) {
                 $scope.loadingTransfer = false;
                 $mdDialog.show({
-                    controller: 'DialogController',
+                    controller: 'TransferDialogController',
                     templateUrl: '/templates/transfer_dialog.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
@@ -58,10 +63,10 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
                     fullscreen: false, // Only for -xs, -sm breakpoints.
 
                     locals: {
-                        price: data.price,
-                        amount: data.amount,
-                        ETH: $scope.Tx.ETH,
-                        AddressTo: $scope.Tx.AddressTo
+                        price:      data.price,
+                        maxGas:     data.maxGas,
+                        IWC:        $scope.Tx.IWC,
+                        AddressTo:  $scope.Tx.AddressTo
                     },
                 })
                 .then(function(answer) {
@@ -74,7 +79,80 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
                 
             });
         
-    };        
+    };
+
+    $scope.showBuyDialog = function(ev) {
+        if(!($scope.Tx.ETHBuy)){
+            window.alert('Please fill in amount');
+            return;
+        }
+        $scope.loadingBuy = true;
+        $http.post('/api/transfer/getGasPrice', $scope.Tx)
+            .success(function (data, status, headers, config) {
+                $scope.loadingBuy = false;
+                $mdDialog.show({
+                    controller: 'BuyDialogController',
+                    templateUrl: '/templates/buy_dialog.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose:true,
+                    fullscreen: false, // Only for -xs, -sm breakpoints.
+
+                    locals: {
+                        price:      data.price,
+                        maxGas:     data.maxGas,
+                        ETHBuy:     $scope.Tx.ETHBuy,
+                        Beneficary: $scope.Tx.Beneficary
+                    },
+                })
+                .then(function(answer) {
+                        $scope.status = 'You said the information was "' + answer + '".';
+                    }, function() {
+                        $scope.status = 'You cancelled the dialog.';
+                    });
+            })
+            .error(function (data, status, headers, config) {
+                
+            });
+        
+    };
+
+    $scope.showETHDialog = function(ev) {
+        if(!($scope.Tx.ETH && $scope.Tx.ETHAddr)){
+            window.alert('Please fill in amount');
+            return;
+        }
+        $scope.loadingETH = true;
+        $http.post('/api/transfer/getGasPrice', $scope.Tx)
+            .success(function (data, status, headers, config) {
+                $scope.loadingETH = false;
+                $mdDialog.show({
+                    controller: 'ETHDialogController',
+                    templateUrl: '/templates/ETH_dialog.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose:true,
+                    fullscreen: false, // Only for -xs, -sm breakpoints.
+
+                    locals: {
+                        price:      data.price,
+                        maxGas:     data.maxGas,
+                        ETH:        $scope.Tx.ETH,
+                        ETHAddr: $scope.Tx.ETHAddr
+                    },
+                })
+                .then(function(answer) {
+                        $scope.status = 'You said the information was "' + answer + '".';
+                    }, function() {
+                        $scope.status = 'You cancelled the dialog.';
+                    });
+            })
+            .error(function (data, status, headers, config) {
+                
+            });
+        
+    };      
+       
 
     $scope.logout = function () {
         $http.get('/api/logout')
@@ -86,15 +164,14 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
                 console.error("Logout Error: ", data);
             });
     };
-
 });
 
-app.controller('DialogController', function ($scope, $mdDialog, $http, price, amount, UserService, ETH, AddressTo) {
+app.controller('TransferDialogController', function ($scope, $mdDialog, $http, price, maxGas, UserService, IWC, AddressTo) {
     $scope.Tx = {
-        gasP: price,
-        maxGas: amount,
-        ETH: ETH,
-        AddressTo: AddressTo
+        gasP:       price,
+        maxGas:     maxGas,
+        IWC:        IWC,
+        AddressTo:  AddressTo
     };
     
     $scope.hide = function() {
@@ -109,7 +186,7 @@ app.controller('DialogController', function ($scope, $mdDialog, $http, price, am
         $mdDialog.hide($scope.Tx);
     };
 
-    $scope.submitForm = function(answer) {
+    $scope.submitTransferForm = function() {
         // $mdDialog.hide($scope.Tx);
         $http.post('/api/transfer/transfer/' + UserService.getUser().user, $scope.Tx)
             .success(function (data, status, headers, config) {
@@ -119,7 +196,68 @@ app.controller('DialogController', function ($scope, $mdDialog, $http, price, am
                 console.error("Logout Error: ", data);
             });
     };
+});
 
+app.controller('BuyDialogController', function ($scope, $mdDialog, $http, price, maxGas, UserService, ETHBuy, Beneficary) {
+    $scope.Tx = {
+        gasP:       price,
+        maxGas:     maxGas,
+        ETHBuy:     ETHBuy,
+        Beneficary: Beneficary
+    };
+    
+    $scope.hide = function() {
+        $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.answer = function(answer) {
+        $mdDialog.hide($scope.Tx);
+    };
+
+    $scope.submitBuyForm = function() {
+        $http.post('/api/transfer/buyIWC/' + UserService.getUser().user, $scope.Tx)
+            .success(function (data, status, headers, config) {
+                console.log("Logout Response: ", data);
+            })
+            .error(function (data, status, headers, config) {
+                console.error("Logout Error: ", data);
+            });
+    };
+});
+
+app.controller('ETHDialogController', function ($scope, $mdDialog, $http, price, maxGas, UserService, ETH, ETHAddr) {
+    $scope.Tx = {
+        gasP:       price,
+        maxGas:     maxGas,
+        ETH:        ETH,
+        ETHAddr:    ETHAddr
+    };
+    
+    $scope.hide = function() {
+        $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.answer = function(answer) {
+        $mdDialog.hide($scope.Tx);
+    };
+
+    $scope.submitBuyForm = function() {
+        $http.post('/api/transfer/transferETH/' + UserService.getUser().user, $scope.Tx)
+            .success(function (data, status, headers, config) {
+                console.log("Logout Response: ", data);
+            })
+            .error(function (data, status, headers, config) {
+                console.error("Logout Error: ", data);
+            });
+    };
 });
 
 app.controller('LoginController', function ($scope, $http, $window) {
@@ -139,7 +277,6 @@ app.controller('LoginController', function ($scope, $http, $window) {
             });
     };
 });
-
 
 app.controller('RegistrationController', function ($scope, $http, $window) {
 
