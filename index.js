@@ -99,6 +99,7 @@ router.route('/transfer/buyIWC/:userId').post(transfer.buyIWC);
 router.route('/transfer/transfer/:userId').post(transfer.transferIWC);
 router.route('/transfer/getGasPrice').post(transfer.getGasPrice);
 router.route('/transfer/test').get(transfer.test);
+router.route('/transfer/showBalances').get(transfer.showBalances);
 
 
 router.route('/loggedIn').post(users.loggedIn);

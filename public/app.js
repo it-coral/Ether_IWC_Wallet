@@ -23,11 +23,33 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
     $scope.loadingBuy = false;
     $scope.loadingETH = false;
     $scope.publicKey = '';
+    
+    $scope.balance = {  
+        ETHBalance: 0, 
+        IWCBalance: 0
+    };
+    
+    var updateBalance = function() {
+        $http.get('/api/transfer/showBalances/')
+        .success(function (data, status, headers, config) {
+            $scope.balance.ETHBalance = data.ETHBalance;
+            $scope.balance.IWCBalance = data.IWCBalance;
+        })
+        .error(function (data, status, headers, config) {
+            console.error(data);
+        });
+
+        $timeout(updateBalance, 30000);
+    }
+
+
     $timeout(function(){
         activate();
     }, 0);
 
     function activate(){
+        updateBalance();
+
         if($scope.user && $scope.user.user){
             $http.get('/api/authy/getPublicKey/' + $scope.user.user)
             .success(function (data, status, headers, config) {
@@ -47,7 +69,7 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
     $scope.showTransferDialog = function(ev) {
         if(!($scope.Tx.IWC && $scope.Tx.AddressTo)){
-            window.alert('Please fill Address and amount');
+            window.alert('Please fill in amount');
             return;
         }
         $scope.loadingTransfer = true;
@@ -64,7 +86,8 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
                     locals: {
                         price:      data.price,
-                        maxGas:     data.maxGas,
+                        // maxGas:     data.maxGas,
+                        maxGas:     60000,
                         IWC:        $scope.Tx.IWC,
                         AddressTo:  $scope.Tx.AddressTo
                     },
@@ -100,7 +123,8 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
                     locals: {
                         price:      data.price,
-                        maxGas:     data.maxGas,
+                        // maxGas:     data.maxGas,
+                        maxGas:     160000,
                         ETHBuy:     $scope.Tx.ETHBuy,
                         Beneficary: $scope.Tx.Beneficary
                     },
@@ -136,7 +160,8 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
 
                     locals: {
                         price:      data.price,
-                        maxGas:     data.maxGas,
+                        // maxGas:     data.maxGas,
+                        maxGas:     60000,
                         ETH:        $scope.Tx.ETH,
                         ETHAddr: $scope.Tx.ETHAddr
                     },
@@ -166,7 +191,14 @@ app.controller('MainController', function ($scope, $http, $window, $mdDialog, Us
     };
 });
 
-app.controller('TransferDialogController', function ($scope, $mdDialog, $http, price, maxGas, UserService, IWC, AddressTo) {
+app.controller('TransferDialogController', function ($scope, $mdDialog, $http, price, maxGas, UserService, IWC, AddressTo, $mdToast) {
+    // $mdToast.show(
+    //     $mdToast.simple()
+    //     .textConent('Simple Toast!')
+    //     .position('top left')
+    //     .hideDelay(3000)
+    // );
+
     $scope.Tx = {
         gasP:       price,
         maxGas:     maxGas,
@@ -190,6 +222,8 @@ app.controller('TransferDialogController', function ($scope, $mdDialog, $http, p
         // $mdDialog.hide($scope.Tx);
         $http.post('/api/transfer/transfer/' + UserService.getUser().user, $scope.Tx)
             .success(function (data, status, headers, config) {
+                window.alert(data.message);
+
                 console.log("Logout Response: ", data);
             })
             .error(function (data, status, headers, config) {

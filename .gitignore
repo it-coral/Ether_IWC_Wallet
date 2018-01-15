@@ -4,6 +4,7 @@ Icon?
 Thumbs.db
 .idea
 .vscode
+.env
 
 # Node Files #
 /node_modules
@@ -34,4 +35,3 @@ ts-node
 /**/*.css.shim.ts
 dll/
 
-config.js

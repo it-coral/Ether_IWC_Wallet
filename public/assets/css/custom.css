@@ -1,0 +1,21 @@
+.md-toolbar-tools {
+    color: #fff;
+    background-color: #ad970d;
+    border-color: #c3aa09;
+}
+button.md-theme {
+    color: #fff;
+    background-color: #ad970d;
+    border-color: #c3aa09;
+}
+md-input-container > .md-input{
+    color: #000;
+    background-color: #fff;
+    border: 2px solid #c3aa09;
+    border-radius: 2px;
+    padding: 5px;
+    margin-bottom: 0px; 
+}
+md-input-container.md-input-focused .md-input {
+    border-color: #c3aa09;
+}

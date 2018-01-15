@@ -19,6 +19,7 @@
 
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
 
+    <link rel="stylesheet" href="/assets/css/custom.css" />
 </head>
 <body style="
 background: url(assets/img/bg2.jpeg) top left repeat, url(assets/img/bg2.jpeg) top left no-repeat;
@@ -27,7 +28,8 @@ background-position: top left;
 -webkit-background-size: cover;
 -moz-background-size: cover;
 -o-background-size: cover;
-background-size: cover;"  ng-controller="MainController">
+background-size: cover;
+height: 1000px"  ng-controller="MainController">
 
 <div id="particles-js"></div>
 
@@ -43,48 +45,101 @@ background-size: cover;"  ng-controller="MainController">
 				<div style="float: left; margin: 0 50px 0 0;">
 					<img src="assets/img/ethereum.png"" width="40" height="40" />
 					<p>Your ETH Balance is:</p>
-					<div id="AccBalance_ETH" class="AccBalance_ETH balance">0</div>
+					<div id="AccBalance_ETH" class="AccBalance_ETH balance">{{balance.ETHBalance}}</div>
 				</div>
 				<div style="float: right;">
 					<img src="assets/img/coin.png"" width="40" height="40" />
 					<p>Your IWC Balance is:</p>
-					<div id="AccBalance_Token" class="AccBalance_Token balance">0</div>
+					<div id="AccBalance_Token" class="AccBalance_Token balance">{{balance.IWCBalance}}</div>
 				</div>
 				<div style="clear:both;"></div>
 			</div>
 
-			<div style="margin: 8px 0 0 0;">
-				<input type="text" name="TransferToken_Address" class="TransferToken_Address" placeholder="address 0x..." ng-model="Tx.AddressTo" />
-				<input type="number" name="TransferToken_Amount" class="TransferToken_Amount"  placeholder="IWC amount" ng-model="Tx.IWC"/>
-				<button type="submit" id="TransferToken_Btn_Customized" class="TransferToken_Btn button-primary" ng-click="showTransferDialog($event)">
+			<form style="margin: 8px 0 0 0;" name="transferForm" layout="row"  layout-align="center start">
+				<md-section flex="20"></md-section>
+				<md-input-container flex="20">
+					<label>Send To Address</label>
+					<input required name="TransferToken_Address" class="TransferToken_Address"  ng-model="Tx.AddressTo" placeholder="address 0x..." >
+					<div ng-messages="transferForm.TransferToken_Address.$error">
+						<div ng-message="required">Address is required.</div>
+					</div>
+				</md-input-container>
+
+				<md-input-container flex="20">
+					<label>IWC Amount</label>
+					<input required name="TransferToken_Amount" class="TransferToken_Amount"  ng-model="Tx.IWC" placeholder="IWC amount" >
+					<div ng-messages="transferForm.TransferToken_Address.$error">
+						<div ng-message="required">IWC Amount is required.</div>
+					</div>
+				</md-input-container>
+				
+      			<md-button flex="20" type="submit"  class="md-theme"  ng-click="showTransferDialog($event)">
 					<div layout="row"  layout-align="center center">
 						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingTransfer"></md-progress-circular>
 						<div style="padding-left:5px">Transfer IWC</div>
 					</div>
-				</button>
-			</div>
+				</md-button>
 
-			<div>
-				<input type="text" name="BuyTokens_Beneficary" class="BuyTokens_Beneficary" placeholder="beneficary 0x..."  ng-model="Tx.Beneficary"  />
-				<input type="number" name="BuyTokens_Amount" class="BuyTokens_Amount" placeholder="ETH amount" ng-model="Tx.ETHBuy" />
-				<button type="submit" id="BuyTokens_Btn_Customized" class="BuyTokens_Btn button-primary" ng-click="showBuyDialog($event)">
+				<md-section flex="20"></md-section>
+			</form>
+
+			<form name="buyForm" style="margin: 8px 0 0 0;" layout="row"  layout-align="center start" >
+
+				<md-section flex="20"></md-section>
+				<md-input-container flex="20">
+					<label>BuyTokens_Beneficary</label>
+					<input required name="BuyTokens_Beneficary" class="BuyTokens_Beneficary"  ng-model="Tx.Beneficary" placeholder="beneficary 0x..." >
+					<div ng-messages="buyForm.BuyTokens_Beneficary.$error">
+						<div ng-message="required">Address is required.</div>
+					</div>
+				</md-input-container>
+
+				<md-input-container flex="20">
+					<label>ETH amount</label>
+					<input required name="BuyTokens_Amount" class="BuyTokens_Amount"  ng-model="Tx.ETHBuy" placeholder="IWC amount" >
+					<div ng-messages="transferForm.TransferToken_Address.$error">
+						<div ng-message="required">IWC Amount is required.</div>
+					</div>
+				</md-input-container>
+				
+      			<md-button flex="20" type="submit"  class="md-theme"  ng-click="showBuyDialog($event)">
 					<div layout="row"  layout-align="center center">
-						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingBuy"></md-progress-circular>
+						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingIWC"></md-progress-circular>
 						<div style="padding-left:5px">Buy IWC</div>
 					</div>
-				</button>
-			</div>
+				</md-button>
+				<md-section flex="20"></md-section>
 
-			<div>
-				<input type="text" name="TransferETH_Address" class="TransferETH_Address" placeholder="Address 0x..."  ng-model="Tx.ETHAddr"  />
-				<input type="number" name="TransferETH_Amount" class="TransferETH_Amount" placeholder="ETH amount" ng-model="Tx.ETH" />
-				<button type="submit" id="TransferETH_Btn_Customized" class="TransferETH_Btn button-primary" ng-click="showETHDialog($event)">
+			</form>
+
+			<form name="buyIWCForm" style="margin: 8px 0 0 0;" layout="row"  layout-align="center start">
+
+
+				<md-section flex="20"></md-section>
+				<md-input-container flex="20">
+					<label>BuyTokens_Beneficary</label>
+					<input required name="TransferETH_Address" class="TransferETH_Address"  ng-model="Tx.ETHAddr" placeholder="Address 0x..." >
+					<div ng-messages="buyIWCForm.TransferETH_Address.$error">
+						<div ng-message="required">Address is required.</div>
+					</div>
+				</md-input-container>
+
+				<md-input-container flex="20">
+					<label>ETH amount</label>
+					<input required name="TransferETH_Amount" class="TransferETH_Amount"  ng-model="Tx.ETH" placeholder="ETH amount" >
+					<div ng-messages="buyIWCForm.ETH.$error">
+						<div ng-message="required">IWC Amount is required.</div>
+					</div>
+				</md-input-container>
+				
+      			<md-button flex="20" type="submit"  class="md-theme"  ng-click="showETHDialog($event)">
 					<div layout="row"  layout-align="center center">
 						<md-progress-circular md-mode="indeterminate"  md-diameter="15px" ng-if="loadingETH"></md-progress-circular>
-						<div style="padding-left:5px">Send ETH</div>
+						<div style="padding-left:5px">Buy ETH</div>
 					</div>
-				</button>
-			</div>
+				</md-button>
+				<md-section flex="20"></md-section>
+			</form>
 
 			<div>
 				<a href="https://etherdelta.com/#0x84332b82575cd4a7bac7a5df08a9712e78ff7d1f-ETH" class="button button-primary" target="_blank">Go to exchange here</a>

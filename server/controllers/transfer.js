@@ -64,11 +64,12 @@ exports.transferIWC = function (req, res) {
                     data:       myContract.methods.transfer(req.body.AddressTo,IWCAmount).encodeABI(),
                     chainId:    web3.utils.toHex(1)
                 }
-                
+
                 //   fire away!
                 sendSigned(user.privKey, req, txData, function(err, result) {
                     if (err) return console.log('error', err);  
                     console.log('sent', result);
+                    res.json({message: "The transaction is on its way."});
                 });
             }
 
@@ -177,11 +178,17 @@ exports.getGasPrice = function (req, res) {
 };
 
 exports.showBalances = function(req, res) {
-    console.log(displayTokenBalance());
-    console.log(displayETHBalance());
-
-    res.json({  ETHBalance: 10, 
-                IWCBalance: 10});
+    var ETHBalance;
+    var TokenBalance;
+    displayETHBalance().then(resp => {
+        ETHBalance = resp;
+        displayTokenBalance().then(rest => {
+            TokenBalance = rest;
+            res.json({  ETHBalance: web3.utils.fromWei(ETHBalance, 'ether'), 
+                        IWCBalance: web3.utils.fromWei(TokenBalance, 'ether')});        
+        })
+    })
+    
 };
 
 
@@ -195,7 +202,7 @@ function displayTokenBalance() {
     //     console.log(balance);
     // });
 
-    myContract.methods.balanceOf(addressFrom).call().then(console.log).catch(console.error);
+    return myContract.methods.balanceOf(addressFrom).call();
     /*,(_err,_resp) => {
     if (_err != null) {
         console.log(_err);
@@ -207,11 +214,12 @@ function displayTokenBalance() {
 
 // update this every x seconds
 function displayETHBalance() {
-  web3.eth.getBalance(addressFrom,(_err,_resp) => {
-    if (_err != null) {
-      console.log(_err);
-  } else {
-      console.log(_resp);
-  }
-});
+    return web3.eth.getBalance(addressFrom);
+//   web3.eth.getBalance(addressFrom,(_err,_resp) => {
+//     if (_err != null) {
+//       console.log(_err);
+//   } else {
+//       console.log(_resp);
+//   }
+// });
 }
